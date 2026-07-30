@@ -21,3 +21,27 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 - `GET /` - root status
 - `GET /api/health` - health check
 - `POST /api/chat` - send a chat request
+
+## Example request
+
+URL:
+
+```bash
+http://127.0.0.1:8000/api/chat
+```
+
+Body:
+
+```json
+{
+  "message": "Hello, how are you?"
+}
+```
+
+Curl example:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Hello, how are you?"}'
+```

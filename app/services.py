@@ -12,11 +12,11 @@ class ChatService:
     def __init__(self, api_key: str | None = None):
         load_dotenv(dotenv_path=PROJECT_ROOT / ".env", override=True)
         self.api_key = api_key or os.getenv("NVIDIA_API_KEY")
-        self.invoke_url = os.getenv("NVIDIA_API_URL", "https://integrate.api.nvidia.com/v1/chat/completions")
-        self.model = os.getenv("NVIDIA_MODEL", "thinkingmachines/inkling")
-        self.temperature = float(os.getenv("NVIDIA_TEMPERATURE", "1"))
-        self.top_p = float(os.getenv("NVIDIA_TOP_P", "0.95"))
-        self.max_tokens = int(os.getenv("NVIDIA_MAX_TOKENS", "8192"))
+        self.invoke_url = os.getenv("NVIDIA_API_URL")
+        self.model = os.getenv("NVIDIA_MODEL")
+        self.temperature = float(os.getenv("NVIDIA_TEMPERATURE"))
+        self.top_p = float(os.getenv("NVIDIA_TOP_P"))
+        self.max_tokens = int(os.getenv("NVIDIA_MAX_TOKENS"))
 
     def get_response(self, message: str) -> str:
         if not self.api_key:

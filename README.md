@@ -33,7 +33,10 @@ NVIDIA_MODEL=your_model_name
 NVIDIA_TEMPERATURE=your_temperature_value
 NVIDIA_TOP_P=your_top_p_value
 NVIDIA_MAX_TOKENS=your_max_tokens_value
+LLAMA_MODEL=llama3.1
 ```
+
+For Ollama local Llama 3.1 usage, you only need `LLAMA_MODEL=llama3.1` and the Ollama SDK. The service uses the `ollama.chat()` call directly, so no API key or URL is required for local Ollama installs.
 
 ## Example request
 

@@ -7,11 +7,12 @@ from fastapi import HTTPException
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-PROVIDER_CONFIGS = ["NVIDIA", "OPENAI", "GEMINI"]
+PROVIDER_CONFIGS = ["NVIDIA", "OPENAI", "GEMINI", "LLAMA"]
 PROVIDER_DISPLAY_NAMES = {
     "nvidia": "NVIDIA",
     "openai": "OpenAI",
     "gemini": "Gemini",
+    "llama": "Llama",
 }
 
 
@@ -61,6 +62,13 @@ class ChatService:
             )
 
         provider_config = self.providers.get(chosen_provider, {})
+
+        if chosen_provider == "llama":
+            chosen_model = model or provider_config.get("model")
+            if not chosen_model:
+                raise HTTPException(status_code=500, detail="Model is not configured for llama")
+            return self._call_ollama(chosen_model, message)
+
         api_key = provider_config.get("api_key")
         invoke_url = provider_config.get("api_url")
         default_model = provider_config.get("model")
@@ -139,6 +147,40 @@ class ChatService:
             "model": model,
             "messages": [{"role": "user", "content": message}]
         }
+
+    def _call_ollama(self, model: str, message: str) -> str:
+        try:
+            from ollama import chat as ollama_chat
+        except ImportError as exc:
+            raise HTTPException(
+                status_code=500,
+                detail="Ollama SDK is not installed. Install it with 'pip install ollama'.",
+            ) from exc
+
+        try:
+            response = ollama_chat(
+                model=model,
+                messages=[{"role": "user", "content": message}],
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+        content = ""
+        if hasattr(response, "message"):
+            message_obj = getattr(response, "message")
+            if hasattr(message_obj, "content"):
+                content = getattr(message_obj, "content")
+            elif isinstance(message_obj, dict):
+                content = message_obj.get("content", "")
+        elif isinstance(response, dict):
+            content = response.get("message", {}).get("content", "")
+        elif response is not None:
+            content = str(response)
+
+        if not content:
+            raise HTTPException(status_code=502, detail="No content returned from Ollama chat response")
+
+        return content
 
     def _extract_gemini_content(self, data: dict) -> str:
         candidates = data.get("candidates") or []

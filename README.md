@@ -36,7 +36,49 @@ NVIDIA_MAX_TOKENS=your_max_tokens_value
 LLAMA_MODEL=llama3.1
 ```
 
-For Ollama local Llama 3.1 usage, you only need `LLAMA_MODEL=llama3.1` and the Ollama SDK. The service uses the `ollama.chat()` call directly, so no API key or URL is required for local Ollama installs.
+For Ollama local Llama 3.1 usage, you only need `LLAMA_MODEL=llama3.1` and the Ollama runtime. The service uses the `ollama.chat()` call directly, so no API key or URL is required for local Ollama installs.
+
+## Ollama / Llama 3.1 setup
+
+1. Install the Ollama CLI on Linux:
+   ```bash
+   curl -fsSL https://ollama.com/install.sh | sh
+   exec $SHELL
+   ```
+
+2. Verify the CLI is available:
+   ```bash
+   ollama --version
+   ```
+
+3. Start the Ollama server in its own terminal:
+   ```bash
+   ollama serve
+   ```
+
+4. In another terminal, pull the model:
+   ```bash
+   ollama pull llama3.1
+   ```
+
+5. Ensure your `.env` includes:
+   ```env
+   LLAMA_MODEL=llama3.1
+   ```
+
+6. Start the FastAPI backend:
+   ```bash
+   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+7. Use the `llama` provider when calling the chat endpoint:
+   ```json
+   {
+     "message": "Hello, how are you?",
+     "provider": "llama",
+     "model": "llama3.1"
+   }
+   ```
 
 ## Example request
 
